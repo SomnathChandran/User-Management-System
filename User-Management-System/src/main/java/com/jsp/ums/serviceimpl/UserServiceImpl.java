@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.jsp.ums.entity.User;
+import com.jsp.ums.exceptions.UserNotFoundByIdException;
 import com.jsp.ums.repository.UserRepo;
 import com.jsp.ums.requestdto.UserRequest;
 import com.jsp.ums.responsedto.UserResponse;
@@ -61,7 +62,7 @@ public class UserServiceImpl implements UserService{
 		  User user2 = userRepo.findById(userId).map(u -> {
 			  user.setUserId(userId); 
 		  return userRepo.save(user); 
-		  }).orElseThrow(()-> new RuntimeException());
+		  }).orElseThrow(()->  new UserNotFoundByIdException("Failed To Found The User"));
 		structure.setStatus(HttpStatus.OK.value());
 		structure.setMessage("Successfully Updated!!");
 		structure.setData(mapToUserResponse(user2));
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public ResponseEntity<ResponceStructure<UserResponse>> deleteUser(int userId) {
-	    User user = userRepo.findById(userId).orElseThrow(()-> new RuntimeException());
+	    User user = userRepo.findById(userId).orElseThrow(()-> new UserNotFoundByIdException("Failed To Found The User"));
 	    int id = user.getUserId();
 	    userRepo.deleteById(id);
 	    structure.setStatus(HttpStatus.OK.value());
@@ -82,7 +83,7 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public ResponseEntity<ResponceStructure<UserResponse>> getUserById(int userId) {
-		User user = userRepo.findById(userId).orElseThrow(()-> new RuntimeException());
+		User user = userRepo.findById(userId).orElseThrow(()-> new UserNotFoundByIdException("Failed To Found The User"));
 		structure.setStatus(HttpStatus.FOUND.value());
 		structure.setMessage("The User Data Fetched Successfully");
 		structure.setData(mapToUserResponse(user));
